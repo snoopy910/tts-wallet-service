@@ -3,20 +3,22 @@ package storage
 import (
 	"fmt"
 	"sync"
+
+	"github.com/snoopy910/tss-wallet-service/internal/service"
 )
 
 type MemoryStorage struct {
-	wallets map[string]*Wallet
+	wallets map[string]*service.Wallet
 	mu      sync.RWMutex
 }
 
 func NewMemoryStorage() *MemoryStorage {
 	return &MemoryStorage{
-		wallets: make(map[string]*Wallet),
+		wallets: make(map[string]*service.Wallet),
 	}
 }
 
-func (s *MemoryStorage) SaveWallet(address string, wallet *Wallet) error {
+func (s *MemoryStorage) SaveWallet(address string, wallet *service.Wallet) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -24,7 +26,7 @@ func (s *MemoryStorage) SaveWallet(address string, wallet *Wallet) error {
 	return nil
 }
 
-func (s *MemoryStorage) GetWallet(address string) (*Wallet, error) {
+func (s *MemoryStorage) GetWallet(address string) (*service.Wallet, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -36,7 +38,7 @@ func (s *MemoryStorage) GetWallet(address string) (*Wallet, error) {
 	return wallet, nil
 }
 
-func (s *MemoryStorage) ListWallets() []string {
+func (s *MemoryStorage) ListWallets() ([]string, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -45,5 +47,5 @@ func (s *MemoryStorage) ListWallets() []string {
 		addresses = append(addresses, addr)
 	}
 
-	return addresses
+	return addresses, nil
 }

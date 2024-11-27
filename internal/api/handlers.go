@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/snoopy910/tss-wallet-service/internal/service"
 )
 
 type Handler struct {
@@ -11,9 +12,9 @@ type Handler struct {
 }
 
 type WalletService interface {
-	CreateWallet() (*Wallet, error)
+	CreateWallet() (*service.Wallet, error)
 	SignData(walletAddress string, data []byte) ([]byte, error)
-	ListWallets() []string
+	ListWallets() ([]string, error)
 }
 
 func NewHandler(service WalletService) *Handler {
@@ -33,7 +34,11 @@ func (h *Handler) CreateWallet(c *gin.Context) {
 }
 
 func (h *Handler) ListWallets(c *gin.Context) {
-	wallets := h.walletService.ListWallets()
+	wallets, err := h.walletService.ListWallets()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"wallets": wallets})
 }
 

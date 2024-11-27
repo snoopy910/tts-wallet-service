@@ -3,6 +3,7 @@ package service
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"log"
 
 	"github.com/bnb-chain/tss-lib/ecdsa/keygen"
 	"github.com/bnb-chain/tss-lib/tss"
@@ -15,7 +16,7 @@ type WalletService struct {
 type Storage interface {
 	SaveWallet(address string, wallet *Wallet) error
 	GetWallet(address string) (*Wallet, error)
-	ListWallets() []string
+	ListWallets() ([]string, error)
 }
 
 type Wallet struct {
@@ -40,7 +41,7 @@ func (s *WalletService) CreateWallet() (*Wallet, error) {
 	// the distributed key generation process with multiple parties
 	params := tss.NewParameters(
 		tss.Edwards(),
-		tss.S256(),
+		tss.NewPeerContext(tss.SortedPartyIDs{}),
 		nil,
 		parties,
 		threshold,
@@ -49,10 +50,8 @@ func (s *WalletService) CreateWallet() (*Wallet, error) {
 	// Generate keys using TSS
 	// This is a placeholder - actual implementation would involve
 	// coordinating between multiple parties
-	_, err := keygen.NewLocalParty(params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create TSS party: %w", err)
-	}
+	party := keygen.NewLocalParty(params, nil, nil)
+	log.Print(party.PartyID())
 
 	// Create wallet instance
 	wallet := &Wallet{
@@ -67,6 +66,10 @@ func (s *WalletService) CreateWallet() (*Wallet, error) {
 	return wallet, nil
 }
 
+func (s *WalletService) ListWallets() ([]string, error) {
+	return s.storage.ListWallets()
+}
+
 func (s *WalletService) SignData(walletAddress string, data []byte) ([]byte, error) {
 	wallet, err := s.storage.GetWallet(walletAddress)
 	if err != nil {
@@ -74,6 +77,7 @@ func (s *WalletService) SignData(walletAddress string, data []byte) ([]byte, err
 	}
 
 	// Implement TSS signing logic here
+	log.Printf(wallet.Address)
 	// This would involve coordinating with other parties to create a signature
 
 	return []byte("signature"), nil // Placeholder
