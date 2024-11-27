@@ -43,7 +43,7 @@ curl http://localhost:8080/wallets
 
 ### Sign Data
 ```
-curl "http://localhost:8080/sign?wallet=0x123...&data=hello"
+curl "http://localhost:8080/sign?wallet={wallet_address}&data=hello"
 ```
 
 ## Design Choices

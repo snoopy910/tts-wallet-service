@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -45,6 +46,8 @@ func (h *Handler) ListWallets(c *gin.Context) {
 func (h *Handler) SignData(c *gin.Context) {
 	wallet := c.Query("wallet")
 	data := c.Query("data")
+
+	fmt.Printf("Received wallet: %s, data: %s\n", wallet, data)
 
 	if wallet == "" || data == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "wallet and data parameters are required"})
