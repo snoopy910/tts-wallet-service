@@ -35,7 +35,7 @@ The server will start on port 8080.
 ```
 curl -X POST http://localhost:8080/wallet
 ```
-
+It will take 20-40 seconds to create wallet.
 ### List Wallets
 ```
 curl http://localhost:8080/wallets

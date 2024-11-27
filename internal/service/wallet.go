@@ -264,7 +264,7 @@ func (s *WalletService) SignData(walletAddress string, data []byte) ([]byte, err
 	}
 
 	// Convert signature to Ethereum format
-	// R, S and V values for Ethereum signature
+	// R, S values for Ethereum signature
 	rBytes := signature.R
 	sBytes := signature.S
 
